@@ -19,6 +19,26 @@ LRESULT CALLBACK WinProc(
 	return DefWindowProcA(hWnd, uMsg, wParam, lParam);
 }
 
+const char* vertexShaderSource =
+	"#version 330 core\n"
+
+	"layout (location = 0) in vec3 pos;\n"
+
+	"void main()\n"
+	"{\n"
+	"	gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);\n"
+	"}\n";
+
+const char* fragmentShaderSource =
+	"#version 330 core\n"
+
+	"out vec4 FragColor;\n"
+
+	"void main()\n"
+	"{\n"
+	"	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+	"}\n";
+
 int WINAPI WinMain(
 	HINSTANCE	hInstance,
 	HINSTANCE	hPreviousInstance,
@@ -40,8 +60,7 @@ int WINAPI WinMain(
 		return 1;
 	}
 
-	HWND hWnd = CreateWindowExA(
-		(DWORD)0U,
+	HWND hWnd = CreateWindowA(
 		(LPCSTR)CLASS_NAME,
 		(LPCSTR)WINDOW_NAME,
 		WS_OVERLAPPEDWINDOW,																		// Стиль окна.
@@ -139,6 +158,42 @@ int WINAPI WinMain(
 	glViewport((GLint)0, (GLint)0, (GLsizei)800, (GLsizei)600);										// glViewport — это функция, которая используется для определения размера и положения просмотра на экране.
 
 	//
+	// Создание и компиляция шейдеров
+
+	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, (GLsizei)1, (const GLchar* const*)&vertexShaderSource, nullptr);
+	glCompileShader(vertexShader);
+
+	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, (GLsizei)1, (const GLchar* const*)&fragmentShaderSource, nullptr);
+	glCompileShader(fragmentShader);
+
+	// Создание программы шейдеров
+
+	GLuint shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);																	// Связывание скомпилированных шейдеров с программой.
+
+	// Создание буфера вершин и массива вершин
+
+	GLuint VAO = (GLuint)0U;
+	GLuint VBO = (GLuint)0U;
+	glGenVertexArrays((GLsizei)1, &VAO);															// VAO: Массив вершин.
+	glGenBuffers((GLsizei)1, &VBO);																	// VBO: Буфер вершин.
+
+	float vertices[] = {
+		 0.0f,	 0.5f,	0.0f,
+		 0.5f,	-0.5f,	0.0f,
+		-0.5f,	-0.5f,	0.0f
+	};
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)sizeof(vertices), (const void*)vertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer((GLuint)0U, (GLuint)3U, GL_FLOAT, GL_FALSE, (GLsizei)(3U * sizeof(float)), (void *)0);
+	glEnableVertexAttribArray((GLuint)0U);
 
 	ShowWindow(hWnd, SW_SHOWNORMAL);
 	UpdateWindow(hWnd);
@@ -157,6 +212,9 @@ int WINAPI WinMain(
 
 			glClearColor((GLfloat)0.2f, (GLfloat)0.298f, (GLfloat)0.29f, (GLfloat)1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			glUseProgram(shaderProgram);
+			glDrawArrays(GL_TRIANGLES, (GLint)0, (GLsizei)3);
 
 			//
 
