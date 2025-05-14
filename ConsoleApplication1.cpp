@@ -14,6 +14,13 @@ LRESULT CALLBACK WinProc(
 		PostQuitMessage(0);																			// PostQuitMessage — это функция, которая используется для отправки сообщения WM_QUIT в очередь сообщений текущего потока.
 
 		return (LRESULT)0;
+	case WM_SIZE:
+		WORD widht = LOWORD(lParam);
+		WORD hiht = HIWORD(lParam);
+
+		glViewport((GLint)0, (GLint)0, (GLsizei)widht, (GLsizei)hiht);
+
+		return (LRESULT)0;
 	}
 
 	return DefWindowProcA(hWnd, uMsg, wParam, lParam);
@@ -188,11 +195,11 @@ int WINAPI WinMain(
 		-0.5f,	-0.5f,	0.0f
 	};
 
-	glBindVertexArray(VAO);
+	glBindVertexArray(VAO);																			// Связывание VAO.
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)sizeof(vertices), (const void*)vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer((GLuint)0U, (GLuint)3U, GL_FLOAT, GL_FALSE, (GLsizei)(3U * sizeof(float)), (void *)0);
+	glVertexAttribPointer((GLuint)0U, (GLuint)3U, GL_FLOAT, GL_FALSE, (GLsizei)(3U * sizeof(float)), (void*)0);
 	glEnableVertexAttribArray((GLuint)0U);
 
 	ShowWindow(hWnd, SW_SHOWNORMAL);
