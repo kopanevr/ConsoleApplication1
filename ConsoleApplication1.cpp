@@ -15,10 +15,7 @@ LRESULT CALLBACK WinProc(
 
 		return (LRESULT)0;
 	case WM_SIZE:
-		WORD widht = LOWORD(lParam);
-		WORD hiht = HIWORD(lParam);
-
-		glViewport((GLint)0, (GLint)0, (GLsizei)widht, (GLsizei)hiht);
+		glViewport((GLint)0, (GLint)0, (GLsizei)LOWORD(lParam), (GLsizei)HIWORD(lParam));
 
 		return (LRESULT)0;
 	}
