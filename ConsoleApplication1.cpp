@@ -140,11 +140,7 @@ int WINAPI WinMain(
 		return 1;
 	}
 
-	if (!SetPixelFormat(hDC, pixelFormat, (const PIXELFORMATDESCRIPTOR*)& pfd))
-	{
-		std::cerr << "Faild to set pixel format!" << std::endl;
-		return 1;
-	}
+	if (!SetPixelFormat(hDC, pixelFormat, (const PIXELFORMATDESCRIPTOR*)& pfd)) { return 1; }
 
 	HGLRC hGLRC = wglCreateContext(hDC);															// wglCreateContext — это функция, которая создает Rendering Context.
 
@@ -206,7 +202,6 @@ int WINAPI WinMain(
 	UpdateWindow(hWnd);
 
 	MSG msg = {};
-
 	BOOL state = TRUE;
 
 	while (state)
